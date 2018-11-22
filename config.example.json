@@ -1,0 +1,60 @@
+{
+  "src": "./dev",
+  "dest": "./dist",
+  "environment": {
+    "development": {
+      "archive": false,
+      "ftpDeploy": false,
+      "clean": true,
+      "proxy": false
+    },
+    "production": {
+      "archive": true,
+      "ftpDeploy": true,
+      "clean": false,
+      "proxy": true
+    }
+  },
+  "clean": [
+    "./dist/*"
+  ],
+  "copy": [
+    {
+      "name": "html",
+      "src": [
+        "./dev/*.html"
+      ],
+      "dest": "./dist/"
+    }
+  ],
+  "css": [
+    {
+      "name": "style",
+      "src": [
+        "/dev/sass/**/*.scss"
+      ],
+      "dest": "./dist/css",
+      "sourcemaps": true,
+      "concat": true,
+      "order": [],
+      "minify": true,
+      "rename": true,
+      "lint": true,
+      "sass": false
+    }
+  ],
+  "js": [
+    {
+      "name": "main",
+      "src": "./dev/js/**/*.js",
+      "dest": "./dist/js",
+      "sourcemaps": true,
+      "concat": true,
+      "order": [],
+      "minify": true,
+      "rename": true,
+      "babel": false,
+      "lint": true
+    }
+  ]
+}

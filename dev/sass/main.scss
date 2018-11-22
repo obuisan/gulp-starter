@@ -1,0 +1,37 @@
+@import 'variables';
+@import 'layout/*';
+
+body {
+  background-color: $gray-lightest;
+  color: $text-color;
+  border: 2px solid blue;
+}
+
+h1 {
+  color: $brand-primary;
+}
+
+.example {
+  display: grid;
+  transition: all 0.5s;
+  user-select: none;
+  background: linear-gradient(to bottom, white, black);
+}
+
+@media (min-width: 800px) {
+  .media-query-a {
+    background-color: red;
+  }
+}
+
+@media (min-width: 800px) {
+  .media-query-b {
+    background-color: blue;
+  }
+}
+
+@media (min-width: 800px) {
+  .media-query-c {
+    background-color: green;
+  }
+}

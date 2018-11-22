@@ -1,0 +1,144 @@
+/* eslint-disable no-console */
+'use strict';
+require('dotenv').load();
+const fs = require('fs');
+const isObject = item => item && typeof item === 'object' && !Array.isArray(item);
+const mergeDeep = (target, ...sources) => {
+  if (!sources.length) return target;
+  const source = sources.shift();
+  if (isObject(target) && isObject(source)) {
+    for (const key in source) {
+      if (isObject(source[key])) {
+        if (!target[key]) {
+          Object.assign(target, { [key]: {} });
+        } else {
+          target[key] = Object.assign({}, target[key]);
+        }
+        mergeDeep(target[key], source[key]);
+      } else {
+        Object.assign(target, { [key]: source[key] });
+      }
+    }
+  }
+  return mergeDeep(target, ...sources);
+};
+var config = require('./config.json');
+const configDefault = {
+  src: './dev',
+  dest: './dist',
+  environment: {
+    development: {
+      archive: false,
+      ftpDeploy: false,
+      clean: true,
+      proxy: false
+    },
+    production: {
+      archive: true,
+      ftpDeploy: true,
+      clean: false,
+      proxy: true
+    }
+  },
+  copy: {
+    name: 'html',
+    src: './dev/*.html',
+    dest: './dist'
+  },
+  css: {
+    name: 'style',
+    src: './dev/sass/**/*.scss',
+    dest: './dist/css',
+    sourcemaps: true,
+    concat: true,
+    order: [],
+    minify: true,
+    rename: true,
+    lint: true,
+    sass: false
+  },
+  js: {
+    name: 'main',
+    src: './dev/js/**/*.js',
+    dest: './dist/js',
+    sourcemaps: true,
+    concat: true,
+    order: null,
+    minify: true,
+    rename: true,
+    lint: true,
+    babel: false
+  }
+};
+config = mergeDeep({}, configDefault, config);
+const path = require('path');
+if (!fs.existsSync(config.src)) {
+  console.error('Error: Source path ' + config.src + ' doesn\'t exist.');
+  process.exit(1);
+}
+
+config.copy = ([].concat(config.copy)).map((bundle, index) => {
+  let bundleName = { name: `bundle${index}` };
+  let options = mergeDeep({}, configDefault.copy, bundleName, bundle);
+  options.src = [].concat(options.src);
+  return options;
+});
+
+config.css = ([].concat(config.css)).map((bundle, index) => {
+  let bundleName = { name: `bundle${index}` };
+  let options = mergeDeep({}, configDefault.css, bundleName, bundle);
+  options.src = [].concat(options.src);
+  options._watch = [];
+  if (bundle.sass) {
+    options._watch = options.src.filter(src => {
+      let partialOrCss = /^(_.*\.(?:scss|sass))|(.*\.css)$/i;
+      return !partialOrCss.test(path.basename(src));
+    }).map(src => {
+      src = path.dirname(src);
+      return src.replace(/\/\*\*+$/, '');
+    });
+    options._watch = [...new Set(options._watch)];
+    options._watch = options._watch.filter((src, index, arr) => {
+      for (let i = 0; i < arr.length; i++) {
+        if (i !== index && src.indexOf(arr[i]) === 0) {
+          return false;
+        }
+      }
+      return true;
+    }).map(src => src + '/**/_*.(scss|sass)');
+  }
+  options.order = [].concat(options.order);
+  return options;
+});
+
+config.js = ([].concat(config.js)).map((bundle, index) => {
+  let bundleName = { name: `bundle${index}` };
+  let options = mergeDeep({}, configDefault.js, bundleName, bundle);
+  options.src = [].concat(options.src);
+  return options;
+});
+
+config._browserSync = false;
+config._stream = true;
+config._currentTask = null;
+config._url = process.env.PUBLIC_URL || 'https://mydomain.tld/';
+config._ftp = {
+  host: process.env.FTP_HOST || 'localhost',
+  port: process.env.FTP_PORT || 21,
+  user: process.env.FTP_USER || 'anonymous',
+  password: process.env.FTP_PASSWORD || 'anonymous@',
+  path: process.env.FTP_PATH || './public_html',
+  parallel: process.env.FTP_PARALLEL || 10,
+  maxConnections: process.env.FTP_MAXCONNECTIONS || 20,
+  timeOffset: process.env.FTP_TIMEOFFSET || 0
+};
+switch (process.env.ENVIROMENT) {
+  case 'pro':
+  case 'production':
+    config._env = config.environment.production;
+    break;
+  default:
+    config._env = config.environment.development;
+};
+
+module.exports = config;
