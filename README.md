@@ -71,6 +71,7 @@ Available options and their default values:
   "css": [
     {
       "name": "style",
+      "base": "./",
       "src": [
         "./sass/**/*.scss"
       ],
@@ -87,7 +88,10 @@ Available options and their default values:
   "js": [
     {
       "name": "main",
-      "src": "./js/**/*.js",
+      "base": "./",
+      "src": [
+        "./js/**/*.js"
+      ],
       "dest": "./js",
       "sourcemaps": true,
       "concat": true,

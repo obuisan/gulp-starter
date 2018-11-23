@@ -37,6 +37,15 @@ const resolvePath = (relative, basePath) => {
   };
   return _resolvePath(relative);
 };
+const normalizeBundle = (optionsDefault, bundle, index) => {
+  let bundleName = { name: `bundle${index}` };
+  let options = mergeDeep({}, optionsDefault, bundleName, bundle);
+  options.src = [].concat(options.src);
+  options.src = options.src.map(src => resolvePath(src, config.src));
+  options.base = resolvePath(options.base || '', config.src);
+  options.dest = resolvePath(options.dest, config.dest);
+  return options;
+};
 
 var config = require('./config.json');
 const configDefault = {
@@ -94,30 +103,18 @@ if (!fs.existsSync(config.src)) {
   process.exit(1);
 }
 
-config.clean = ([].concat(config.clean)).map(src => resolvePath(src, config.src));
+config.clean = ([].concat(config.clean)).map(src => resolvePath(src, config.dest));
 
-config.copy = ([].concat(config.copy)).map((bundle, index) => {
-  let bundleName = { name: `bundle${index}` };
-  let options = mergeDeep({}, configDefault.copy, bundleName, bundle);
-  options.src = [].concat(options.src);
-  options.src = options.src.map(src => resolvePath(src, config.src));
-  options.dest = resolvePath(options.dest, config.dest);
-  return options;
-});
+config.copy = ([].concat(config.copy)).map((bundle, index) => normalizeBundle(configDefault.copy, bundle, index));
 
 config.css = ([].concat(config.css)).map((bundle, index) => {
-  let bundleName = { name: `bundle${index}` };
-  let options = mergeDeep({}, configDefault.css, bundleName, bundle);
-  options.src = [].concat(options.src);
+  let options = normalizeBundle(configDefault.css, bundle, index);
   options._watch = [];
   if (bundle.sass) {
     options._watch = options.src.filter(src => {
       let partialOrCss = /^(_.*\.(?:scss|sass))|(.*\.css)$/i;
       return !partialOrCss.test(path.basename(src));
-    }).map(src => {
-      src = path.dirname(src);
-      return src.replace(/\/\*\*+$/, '');
-    });
+    }).map(src => path.dirname(src).replace(/\/\*\*+$/, ''));
     options._watch = [...new Set(options._watch)];
     options._watch = options._watch.filter((src, index, arr) => {
       for (let i = 0; i < arr.length; i++) {
@@ -126,20 +123,15 @@ config.css = ([].concat(config.css)).map((bundle, index) => {
         }
       }
       return true;
-    }).map(src => resolvePath(src, config.src) + '/**/_*.(scss|sass)');
+    }).map(src => src + '/**/_*.(scss|sass)');
   }
-  options.src = options.src.map(src => resolvePath(src, config.src));
-  options.dest = resolvePath(options.dest, config.dest);
-  options.order = [].concat(options.order);
+  options.order = [].concat(options.order || []);
   return options;
 });
 
 config.js = ([].concat(config.js)).map((bundle, index) => {
-  let bundleName = { name: `bundle${index}` };
-  let options = mergeDeep({}, configDefault.js, bundleName, bundle);
-  options.src = [].concat(options.src);
-  options.src = options.src.map(src => resolvePath(src, config.src));
-  options.dest = resolvePath(options.dest, config.dest);
+  let options = normalizeBundle(configDefault.js, bundle, index);
+  options.order = [].concat(options.order || []);
   return options;
 });
 

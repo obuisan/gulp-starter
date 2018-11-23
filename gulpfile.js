@@ -124,12 +124,12 @@ function cssBundleTask(bundle, index) {
         .pipe(sass({ includePaths: ['./bower_components', './node_modules'], outputStyle: 'expanded' }))
         .pipe(lineEndingCorrector())
         .pipe(gulpif(bundle.sourcemaps, sourcemaps.write({ includeContent: false, addComment: false })))
-        .pipe(sassFilter.restore)
-        .pipe(gulpif(bundle.concat, order(bundle.order)));
+        .pipe(sassFilter.restore);
     }
     task = task.pipe(gulpif(bundle.sourcemaps, sourcemaps.init({ loadMaps: true })))
       .pipe(autoprefixer({ cascade: true, grid: true }))
       .pipe(postcss([perfectionist()]))
+      .pipe(gulpif(bundle.concat, order(bundle.order)))
       .pipe(gulpif(bundle.concat, concat(bundle.name + '.css')))
       .pipe(lineEndingCorrector())
       .pipe(gulpif(bundle.sourcemaps, sourcemaps.write('.', { addComment: true })))
@@ -171,6 +171,7 @@ function jsBundleTask(bundle, index) {
       .pipe(gulpif(bundle.lint, eslint.failAfterError()))
       .pipe(gulpif(bundle.sourcemaps, sourcemaps.init({ loadMaps: true })))
       .pipe(gulpif(bundle.babel, babel()))
+      .pipe(gulpif(bundle.concat, order(bundle.order)))
       .pipe(gulpif(bundle.concat, concat(bundle.name + '.js')))
       .pipe(lineEndingCorrector())
       .pipe(gulpif(bundle.sourcemaps, sourcemaps.write('.', { addComment: true })))
@@ -254,6 +255,8 @@ const watch = (done) => {
           let partialBundle = { ...bundle };
           partialBundle.src = eventPath;
           return gulp.series(copyBundleTask(partialBundle, index))();
+        } else if (event === 'unlink') {
+          /** @todo pending */
         }
       };
       gulp.watch(bundle.src).on('all', copyChanged);

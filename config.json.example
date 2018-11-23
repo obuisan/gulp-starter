@@ -21,6 +21,7 @@
   "copy": [
     {
       "name": "html",
+      "base": "./",
       "src": [
         "*.html"
       ],
@@ -30,6 +31,7 @@
   "css": [
     {
       "name": "style",
+      "base": "./",
       "src": [
         "./sass/**/*.scss"
       ],
@@ -46,7 +48,10 @@
   "js": [
     {
       "name": "main",
-      "src": "./js/**/*.js",
+      "base": "./",
+      "src": [
+        "./js/**/*.js"
+      ],
       "dest": "./js",
       "sourcemaps": true,
       "concat": true,

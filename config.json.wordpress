@@ -1,32 +1,30 @@
 {
   "src": "./dev",
-  "dest": "./dist",
+  "dest": "./wordpress/wp-content/themes/mytheme",
   "environment": {
     "development": {
       "archive": true,
       "ftpDeploy": false,
       "clean": true,
-      "proxy": false
+      "proxy": true
     },
     "production": {
       "archive": true,
-      "ftpDeploy": true,
+      "ftpDeploy": false,
       "clean": false,
       "proxy": true
     }
   },
   "clean": [
-    "**/*.html",
-    "**/*.css",
-    "**/*.js",
-    "**/*.map",
-    "**/*.zip"
+    "**/*"
   ],
   "copy": [
     {
-      "name": "html",
+      "name": "theme files",
       "src": [
-        "index.html"
+        "**/*.php",
+        "**/*.(gif|jpg|png|svg|webp)",
+        "**/*.(eot|ttf|otf|woff|woff2)"
       ]
     }
   ],
@@ -34,28 +32,17 @@
     {
       "name": "style",
       "src": [
-        "sass/**/*.scss",
-        "sass/extra.css"
+        "sass/**/*.scss"
       ],
+      "dest": "./",
       "sass": true
-    },
-    {
-      "name": "css-ordered",
-      "src": [
-        "css/*.css"
-      ],
-      "order": [
-        "**/*2.css",
-        "css/3.css",
-        "**/*1.css"
-      ],
-      "lint": false
     }
   ],
   "js": [
     {
       "name": "main",
-      "src": "./js/main.js",
+      "src": "js/main.js",
+      "dest": "./",
       "babel": true
     }
   ]

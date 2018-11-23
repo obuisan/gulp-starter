@@ -16,11 +16,7 @@
     }
   },
   "clean": [
-    "**/*.html",
-    "**/*.css",
-    "**/*.js",
-    "**/*.map",
-    "**/*.zip"
+    "**/*.(css|html|js|map|zip)"
   ],
   "copy": [
     {
@@ -32,15 +28,46 @@
   ],
   "css": [
     {
-      "name": "style",
+      "name": "style-unordered",
       "src": [
         "sass/**/*.scss",
-        "sass/extra.css"
+        "sass/footer-extra.css"
       ],
       "sass": true
     },
     {
-      "name": "css-ordered",
+      "name": "style-ordered",
+      "src": [
+        "sass/**/*.scss",
+        "sass/footer-extra.css"
+      ],
+      "order": [
+        "!**/footer-extra.css",
+        "**/footer-extra.css"
+      ],
+      "sass": true
+    },
+    {
+      "name": "css-ordered-ascending",
+      "src": [
+        "css/*.css"
+      ],
+      "lint": false
+    },
+    {
+      "name": "css-ordered-descending",
+      "src": [
+        "css/*.css"
+      ],
+      "order": [
+        "**/*3.css",
+        "**/*2.css",
+        "**/*1.css"
+      ],
+      "lint": false
+    },
+    {
+      "name": "css-ordered-custom",
       "src": [
         "css/*.css"
       ],
