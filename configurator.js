@@ -2,6 +2,7 @@
 'use strict';
 require('dotenv').load();
 const fs = require('fs');
+const path = require('path');
 const isObject = item => item && typeof item === 'object' && !Array.isArray(item);
 const mergeDeep = (target, ...sources) => {
   if (!sources.length) return target;
@@ -22,6 +23,21 @@ const mergeDeep = (target, ...sources) => {
   }
   return mergeDeep(target, ...sources);
 };
+const resolvePath = (relative, basePath) => {
+  basePath = basePath.replace(/[/]+$/, '');
+  let _resolvePath = (value) => {
+    if (Array.isArray(value)) {
+      value = value.map(index => _resolvePath(index));
+    } else if (typeof value === 'string') {
+      if (value.indexOf('/') !== 0) {
+        value = (basePath + '/' + value.replace(/^[./]+/, '')).replace(/[/]+$/, '');
+      }
+    }
+    return value;
+  };
+  return _resolvePath(relative);
+};
+
 var config = require('./config.json');
 const configDefault = {
   src: './dev',
@@ -40,15 +56,16 @@ const configDefault = {
       proxy: true
     }
   },
+  clean: [],
   copy: {
     name: 'html',
-    src: './dev/*.html',
-    dest: './dist'
+    src: './*.html',
+    dest: './'
   },
   css: {
     name: 'style',
-    src: './dev/sass/**/*.scss',
-    dest: './dist/css',
+    src: './sass/**/*.scss',
+    dest: './css',
     sourcemaps: true,
     concat: true,
     order: [],
@@ -59,8 +76,8 @@ const configDefault = {
   },
   js: {
     name: 'main',
-    src: './dev/js/**/*.js',
-    dest: './dist/js',
+    src: './js/**/*.js',
+    dest: './js',
     sourcemaps: true,
     concat: true,
     order: null,
@@ -71,16 +88,20 @@ const configDefault = {
   }
 };
 config = mergeDeep({}, configDefault, config);
-const path = require('path');
+
 if (!fs.existsSync(config.src)) {
   console.error('Error: Source path ' + config.src + ' doesn\'t exist.');
   process.exit(1);
 }
 
+config.clean = ([].concat(config.clean)).map(src => resolvePath(src, config.src));
+
 config.copy = ([].concat(config.copy)).map((bundle, index) => {
   let bundleName = { name: `bundle${index}` };
   let options = mergeDeep({}, configDefault.copy, bundleName, bundle);
   options.src = [].concat(options.src);
+  options.src = options.src.map(src => resolvePath(src, config.src));
+  options.dest = resolvePath(options.dest, config.dest);
   return options;
 });
 
@@ -105,8 +126,10 @@ config.css = ([].concat(config.css)).map((bundle, index) => {
         }
       }
       return true;
-    }).map(src => src + '/**/_*.(scss|sass)');
+    }).map(src => resolvePath(src, config.src) + '/**/_*.(scss|sass)');
   }
+  options.src = options.src.map(src => resolvePath(src, config.src));
+  options.dest = resolvePath(options.dest, config.dest);
   options.order = [].concat(options.order);
   return options;
 });
@@ -115,6 +138,8 @@ config.js = ([].concat(config.js)).map((bundle, index) => {
   let bundleName = { name: `bundle${index}` };
   let options = mergeDeep({}, configDefault.js, bundleName, bundle);
   options.src = [].concat(options.src);
+  options.src = options.src.map(src => resolvePath(src, config.src));
+  options.dest = resolvePath(options.dest, config.dest);
   return options;
 });
 

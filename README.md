@@ -57,24 +57,24 @@ Available options and their default values:
     }
   },
   "clean": [
-    "./dist/*"
+    "./*"
   ],
   "copy": [
     {
       "name": "html",
       "src": [
-        "./dev/*.html"
+        "*.html"
       ],
-      "dest": "./dist/"
+      "dest": "./"
     }
   ],
   "css": [
     {
       "name": "style",
       "src": [
-        "/dev/sass/**/*.scss"
+        "./sass/**/*.scss"
       ],
-      "dest": "./dist/css",
+      "dest": "./css",
       "sourcemaps": true,
       "concat": true,
       "order": [],
@@ -87,8 +87,8 @@ Available options and their default values:
   "js": [
     {
       "name": "main",
-      "src": "./dev/js/**/*.js",
-      "dest": "./dist/js",
+      "src": "./js/**/*.js",
+      "dest": "./js",
       "sourcemaps": true,
       "concat": true,
       "order": [],

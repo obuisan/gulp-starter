@@ -16,33 +16,32 @@
     }
   },
   "clean": [
-    "./dist/**/*.html",
-    "./dist/**/*.css",
-    "./dist/**/*.js",
-    "./dist/**/*.map",
-    "./dist/**/*.zip"
+    "**/*.html",
+    "**/*.css",
+    "**/*.js",
+    "**/*.map",
+    "**/*.zip"
   ],
   "copy": [
     {
       "name": "html",
       "src": [
-        "./dev/index.html"
-      ],
-      "dest": "./dist/"
+        "index.html"
+      ]
     }
   ],
   "css": [
     {
       "name": "style",
       "src": [
-        "./dev/sass/**/*.scss"
+        "sass/**/*.scss"
       ],
       "sass": true
     },
     {
       "name": "test-css",
       "src": [
-        "./dev/css/*.css"
+        "css/*.css"
       ],
       "lint": false
     }
@@ -50,7 +49,7 @@
   "js": [
     {
       "name": "main",
-      "src": "./dev/js/main.js",
+      "src": "./js/main.js",
       "babel": true
     }
   ]
