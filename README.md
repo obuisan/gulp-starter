@@ -40,22 +40,6 @@ Available options and their default values:
 
 ```json
 {
-  "src": "./dev",
-  "dest": "./dist",
-  "environment": {
-    "development": {
-      "archive": false,
-      "ftpDeploy": false,
-      "clean": true,
-      "proxy": false
-    },
-    "production": {
-      "archive": true,
-      "ftpDeploy": true,
-      "clean": false,
-      "proxy": true
-    }
-  },
   "clean": [
     "./*"
   ],

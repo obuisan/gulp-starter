@@ -47,24 +47,19 @@ const normalizeBundle = (optionsDefault, bundle, index) => {
   return options;
 };
 
-var config = require('./config.json');
+var config = {};
+switch (process.env.ENVIROMENT) {
+  case undefined:
+  case 'dev':
+  case 'development':
+    config = require('./config.json');
+    break;
+  default:
+    config = require('./config-' + process.env.ENVIROMENT + '.json');
+};
 const configDefault = {
   src: './dev',
   dest: './dist',
-  environment: {
-    development: {
-      archive: false,
-      ftpDeploy: false,
-      clean: true,
-      proxy: false
-    },
-    production: {
-      archive: true,
-      ftpDeploy: true,
-      clean: false,
-      proxy: true
-    }
-  },
   clean: [],
   copy: {
     name: 'html',
@@ -97,6 +92,13 @@ const configDefault = {
   }
 };
 config = mergeDeep({}, configDefault, config);
+
+config.src = process.env.SOURCE_PATH || config.src;
+config.dest = process.env.DESTINATION_PATH || config.dest;
+config.archive = process.env.ARCHIVE || false;
+config.ftpDeploy = process.env.FTP_DEPLOY || false;
+config.clean = process.env.CLEAN || false;
+config.proxy = process.env.PROXY || false;
 
 if (!fs.existsSync(config.src)) {
   console.error('Error: Source path ' + config.src + ' doesn\'t exist.');
@@ -148,14 +150,6 @@ config._ftp = {
   parallel: process.env.FTP_PARALLEL || 10,
   maxConnections: process.env.FTP_MAXCONNECTIONS || 20,
   timeOffset: process.env.FTP_TIMEOFFSET || 0
-};
-switch (process.env.ENVIROMENT) {
-  case 'pro':
-  case 'production':
-    config._env = config.environment.production;
-    break;
-  default:
-    config._env = config.environment.development;
 };
 
 module.exports = config;

@@ -226,17 +226,17 @@ gulp.task('ftp:deploy', ftpTask(config.dest + '/**/*'));
 const build = (done) => {
   config._currentTask = 'build';
   let tasks = [];
-  if (config._env.clean) {
+  if (config._clean) {
     tasks.push('clean');
   }
   tasks.push('css', 'js', 'copy');
-  if (config._env.archive) {
+  if (config.archive) {
     tasks.push('archive');
   }
-  if (config._env.ftpDeploy && config._env.clean) {
+  if (config.ftpDeploy && config._clean) {
     tasks.push('ftp:clean');
   }
-  if (config._env.ftpDeploy) {
+  if (config.ftpDeploy) {
     tasks.push('ftp:deploy');
   }
   return gulp.series(...tasks)(done);
@@ -263,7 +263,7 @@ const watch = (done) => {
     });
     config.css.forEach((bundle, index) => gulp.watch(bundle.src.concat(bundle._watch), cssBundleTask(bundle, index)));
     config.js.forEach((bundle, index) => gulp.watch(bundle.src, jsBundleTask(bundle, index)));
-    if (config._env.ftpDeploy) {
+    if (config.ftpDeploy) {
       let ftpChanged = (event, eventPath) => {
         if (event === 'add' || event === 'change') {
           return gulp.series(ftpTask(eventPath))();
@@ -280,9 +280,9 @@ gulp.task('watch', watch);
  * Task: `serve`.
  */
 gulp.task('serve', (done) => {
-  let options = config._env.proxy ? { proxy: config._url } : { server: { baseDir: config.dest } };
+  let options = config.proxy ? { proxy: config._url } : { server: { baseDir: config.dest } };
   config._browserSync = true;
-  config._stream = !config._env.ftpDeploy;
+  config._stream = !config.ftpDeploy;
   watch(() => {
     browserSync.init(options);
     done();
