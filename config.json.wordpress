@@ -1,20 +1,4 @@
 {
-  "src": "./dev",
-  "dest": "./wordpress/wp-content/themes/mytheme",
-  "environment": {
-    "development": {
-      "archive": true,
-      "ftpDeploy": false,
-      "clean": true,
-      "proxy": true
-    },
-    "production": {
-      "archive": true,
-      "ftpDeploy": false,
-      "clean": false,
-      "proxy": true
-    }
-  },
   "clean": [
     "**/*"
   ],

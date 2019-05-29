@@ -1,20 +1,4 @@
 {
-  "src": "./dev",
-  "dest": "./dist",
-  "environment": {
-    "development": {
-      "archive": true,
-      "ftpDeploy": false,
-      "clean": true,
-      "proxy": false
-    },
-    "production": {
-      "archive": true,
-      "ftpDeploy": true,
-      "clean": false,
-      "proxy": true
-    }
-  },
   "clean": [
     "**/*.(css|html|js|map|zip)"
   ],
