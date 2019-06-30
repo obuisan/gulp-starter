@@ -1,45 +1,25 @@
 /*!
-  This is an important (!) comment and will be preserved.
+    This is an important (!) comment and will be preserved.
 */
-
-/*
-  This comment is not important and could be removed.
-*/
-
 @import 'variables';
+@import 'mixins/*';
 @import 'layout/*';
 
+// bootstrap media-breakpoint mixins examples
 body {
-  background-color: $gray-lightest;
-  color: $text-color;
-  border: 2px solid blue;
-}
+    @include media-breakpoint-down(xs) {
+        border: 10px solid black !important;
+    }
 
-h1 {
-  color: $brand-primary;
-}
+    @include media-breakpoint-between(sm, md) {
+        border: 10px solid blue !important;
+    }
 
-.example {
-  display: grid;
-  transition: all 0.5s;
-  user-select: none;
-  background: linear-gradient(to bottom, white, black);
-}
+    @include media-breakpoint-only(lg) {
+        border: 10px solid yellow !important;
+    }
 
-@media (min-width: 800px) {
-  .media-query-a {
-    background-color: red;
-  }
-}
-
-@media (min-width: 800px) {
-  .media-query-b {
-    background-color: blue;
-  }
-}
-
-@media (min-width: 800px) {
-  .media-query-c {
-    background-color: green;
-  }
+    @include media-breakpoint-up(xl) {
+        border: 10px solid red !important;
+    }
 }

@@ -1,16 +1,15 @@
 {
   "clean": [
-    "**/*.html",
-    "**/*.css",
-    "**/*.js",
-    "**/*.map",
-    "**/*.zip"
+    "**/*"
   ],
   "copy": [
     {
-      "name": "html",
+      "name": "files",
       "src": [
-        "index.html"
+        "**/*.{php,html}",
+        "**/*.{gif,jpg,png,svg,webp}",
+        "**/*.{eot,ttf,otf,woff,woff2}",
+        "**/*.{pot,po,mo}"
       ]
     }
   ],
@@ -18,28 +17,17 @@
     {
       "name": "style",
       "src": [
-        "sass/**/*.scss",
-        "sass/extra.css"
+        "sass/**/*.scss"
       ],
+      "dest": "./",
       "sass": true
-    },
-    {
-      "name": "css-ordered",
-      "src": [
-        "css/*.css"
-      ],
-      "order": [
-        "**/*2.css",
-        "css/3.css",
-        "**/*1.css"
-      ],
-      "lint": false
     }
   ],
   "js": [
     {
       "name": "main",
-      "src": "./js/main.js",
+      "src": "js/main.js",
+      "dest": "./",
       "babel": true
     }
   ]
