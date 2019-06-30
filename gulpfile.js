@@ -304,7 +304,7 @@ gulp.task('archive', () =>
 /**
  * Task: `clean`.
  */
-gulp.task('clean', () => del(config.clean));
+gulp.task('clean', () => del(config.clean, { force: config._clean_force }));
 
 /**
  * Task: `default`.

@@ -95,10 +95,11 @@ config = mergeDeep({}, configDefault, config);
 
 config.src = process.env.SOURCE_PATH || config.src;
 config.dest = process.env.DESTINATION_PATH || config.dest;
-config.archive = process.env.ARCHIVE || false;
-config.ftpDeploy = process.env.FTP_DEPLOY || false;
-config.clean = process.env.CLEAN || false;
-config.proxy = process.env.PROXY || false;
+config.archive = (process.env.ARCHIVE === 'true') || false;
+config.ftpDeploy = (process.env.FTP_DEPLOY === 'true') || false;
+config._clean = (process.env.CLEAN === 'true') || false;
+config._clean_force = (process.env.CLEAN_FORCE === 'true') || false;
+config.proxy = (process.env.PROXY === 'true') || false;
 
 if (!fs.existsSync(config.src)) {
   console.error('Error: Source path ' + config.src + ' doesn\'t exist.');
