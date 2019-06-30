@@ -1,6 +1,16 @@
 {
-  "extends": "stylelint-config-standard",
-  "rules": {
-    "no-empty-source": null
-  }
+    "extends": "stylelint-config-standard",
+    "rules": {
+        "at-rule-no-unknown": null,
+        "no-empty-source": null,
+        "indentation": 4,
+        "at-rule-empty-line-before": ["always", {
+            "except": [
+                "blockless-after-same-name-blockless",
+                "first-nested"
+            ],
+            "ignore": ["after-comment"],
+            "ignoreAtRules": ["return"]
+        }]
+    }
 }
