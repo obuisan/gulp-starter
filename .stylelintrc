@@ -4,13 +4,14 @@
         "at-rule-no-unknown": null,
         "no-empty-source": null,
         "indentation": 4,
-        "at-rule-empty-line-before": ["always", {
-            "except": [
-                "blockless-after-same-name-blockless",
-                "first-nested"
+        "rule-empty-line-before": ["always", {
+            ignore: [
+                "after-comment", "first-nested"
             ],
-            "ignore": ["after-comment"],
-            "ignoreAtRules": ["return"]
-        }]
+        }],
+        "selector-pseudo-element-colon-notation": "single",
+        "no-descending-specificity": null,
+        "comment-empty-line-before": null,
+        "color-hex-length": null
     }
 }

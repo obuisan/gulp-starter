@@ -15,9 +15,11 @@ const ftp = require('vinyl-ftp');
 const gulp = require('gulp');
 const gulpif = require('gulp-if');
 const lineEndingCorrector = require('gulp-line-ending-corrector');
+const map = require('map-stream');
 const mqPacker = require('css-mqpacker');
 const notify = require('gulp-notify');
 const order = require('gulp-order');
+const path = require('path');
 const perfectionist = require('perfectionist');
 const plumber = require('gulp-plumber');
 const postcss = require('gulp-postcss');
@@ -31,9 +33,9 @@ const uglify = require('gulp-uglify');
 const zip = require('gulp-zip');
 
 const consoleError = (error) => {
-  let message = error.messageOriginal ? error.messageOriginal : error.message;
+  const message = error.messageOriginal ? error.messageOriginal : error.message;
   let report = '';
-  let chalk = c.white.bgRed;
+  const chalk = c.white.bgRed;
   report += chalk('TASK:') + ' [' + error.plugin + ']\n';
   report += chalk('PROB:') + ' ' + message + '\n';
   if (error.line) {
@@ -46,7 +48,7 @@ const consoleError = (error) => {
 };
 
 const handleError = function (error) {
-  let message = error.messageOriginal ? error.messageOriginal : error.message;
+  const message = error.messageOriginal ? error.messageOriginal : error.message;
 
   if (error.plugin === 'gulp-stylelint') {
     return handleWarning(error);
@@ -102,7 +104,7 @@ function copyBundleTask(bundle, index) {
   return copyBundle;
 }
 function copyTask(done) {
-  let tasks = config.copy.map(copyBundleTask);
+  const tasks = config.copy.map(copyBundleTask);
   return gulp.series(...tasks)(done);
 }
 gulp.task('copy', copyTask);
@@ -112,8 +114,8 @@ gulp.task('copy', copyTask);
  */
 function cssBundleTask(bundle, index) {
   function cssBundle(done) {
-    let cssFilter = filter(['**/*.css', '**/*.min.css']);
-    let sassFilter = filter(['**/*.scss'], { restore: true });
+    const cssFilter = filter(['**/*.css', '**/*.min.css']);
+    const sassFilter = filter(['**/*.scss'], { restore: true });
     let task = gulp.src(bundle.src, { base: bundle.base, allowEmpty: true })
       .pipe(plumber({ errorHandler: handleError }));
     if (bundle.sass) {
@@ -153,7 +155,7 @@ function cssBundleTask(bundle, index) {
 };
 
 function cssTask(done) {
-  let tasks = config.css.map(cssBundleTask);
+  const tasks = config.css.map(cssBundleTask);
   return gulp.series(...tasks)(done);
 }
 gulp.task('css', cssTask);
@@ -163,7 +165,7 @@ gulp.task('css', cssTask);
  */
 function jsBundleTask(bundle, index) {
   function jsBundle() {
-    let jsFilter = filter(['**/*.js']);
+    const jsFilter = filter(['**/*.js']);
     return gulp.src(bundle.src, { base: bundle.base, allowEmpty: true })
       .pipe(plumber({ errorHandler: handleError }))
       .pipe(gulpif(bundle.lint, eslint()))
@@ -192,7 +194,7 @@ function jsBundleTask(bundle, index) {
 }
 
 function jsTask(done) {
-  let tasks = config.js.map(jsBundleTask);
+  const tasks = config.js.map(jsBundleTask);
   return gulp.series(...tasks)(done);
 }
 gulp.task('js', jsTask);
@@ -201,18 +203,22 @@ gulp.task('js', jsTask);
  * Task: `ftp`.
  */
 gulp.task('ftp:clean', (done) => {
-  let conn = ftpConn();
+  const conn = ftpConn();
   return conn.clean(config._ftp.path + '/**', config.dest).on('error', handleError).on('end', done);
 });
 
 function ftpTask(glob) {
   function ftpUpload(done) {
-    let conn = ftpConn();
+    const conn = ftpConn();
     return gulp.src(glob, { buffer: false, base: config.dest })
       .pipe(plumber({ errorHandler: handleError }))
       .pipe(conn.newerOrDifferentSize(config._ftp.path))
       .pipe(conn.dest(config._ftp.path)).on('end', done)
       .pipe(filter(['**', '!**/*.map']))
+      .pipe(map((file, cb) => {
+        file.path = path.join(config._proxy_path, file.relative);
+        cb(null, file);
+      }))
       .pipe(gulpif(config._browserSync, browserSync.stream()));
   }
   ftpUpload.displayName = displaySubTaskName('ftp', ':sync ', glob);
@@ -225,7 +231,7 @@ gulp.task('ftp:deploy', ftpTask(config.dest + '/**/*'));
  */
 const build = (done) => {
   config._currentTask = 'build';
-  let tasks = [];
+  const tasks = [];
   if (config._clean) {
     tasks.push('clean');
   }
@@ -250,9 +256,9 @@ const watch = (done) => {
   build(() => {
     config._currentTask = 'watch';
     config.copy.forEach((bundle, index) => {
-      let copyChanged = (event, eventPath) => {
+      const copyChanged = (event, eventPath) => {
         if (event === 'add' || event === 'change') {
-          let partialBundle = { ...bundle };
+          const partialBundle = { ...bundle };
           partialBundle.src = eventPath;
           return gulp.series(copyBundleTask(partialBundle, index))();
         } else if (event === 'unlink') {
@@ -280,7 +286,7 @@ gulp.task('watch', watch);
  * Task: `serve`.
  */
 gulp.task('serve', (done) => {
-  let options = config.proxy ? { proxy: config._url } : { server: { baseDir: config.dest } };
+  const options = config.proxy ? { proxy: config._proxy_url } : { server: { baseDir: config.dest } };
   config._browserSync = true;
   config._stream = !config.ftpDeploy;
   watch(() => {

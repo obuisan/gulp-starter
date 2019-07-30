@@ -1,6 +1,13 @@
 {
     "css": {
         "indent_size": 4,
-        "preserve_newlines": false
+        "preserve_newlines": false,
+        "space_around_combinator": true
+    },
+    "html": {
+        "indent_size": 2
+    },
+    "js": {
+        "indent_size": 2
     }
 }
